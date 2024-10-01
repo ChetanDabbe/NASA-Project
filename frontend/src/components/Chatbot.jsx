@@ -15,7 +15,7 @@ function Chatbot({ onClose }) {
 
       try {
         setLoading(true); // Set loading to true while waiting for response
-        const response = await fetch('http://localhost:3000/chat', {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/chat`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
