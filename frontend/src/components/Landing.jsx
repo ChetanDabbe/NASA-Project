@@ -62,12 +62,12 @@ function Landing() {
       </section>
 
       <footer>
-        <p>© 2024 Agriculture Water Management | All Rights Reserved</p>
+        <p style={{color:'white'}}>© 2024 Agriculture Water Management | All Rights Reserved</p>
       </footer>
 
       {/* Chatbot Button */}
       <button className="chat-btn" onClick={toggleChatbot}>
-        {showChatbot ? 'Close Chat' : 'Chat with Us'}
+        {showChatbot ? 'Close Chat' : 'Chat with AI'}
       </button>
 
       {/* Chatbot Component */}

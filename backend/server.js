@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const nodemailer= require('nodemailer');
+const nodemailer = require('nodemailer');
 const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = require('@google/generative-ai');
 const dotenv = require('dotenv').config();
 
@@ -18,7 +18,7 @@ async function runChat(userInput) {
   const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
   const generationConfig = {
-    temperature: 0.01,
+    temperature: 0.9,
     topK: 1,
     topP: 1,
     maxOutputTokens: 1000,
@@ -29,7 +29,6 @@ async function runChat(userInput) {
       category: HarmCategory.HARM_CATEGORY_HARASSMENT,
       threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
     },
-    // ... other safety settings can be added here
   ];
 
   const chat = model.startChat({
@@ -39,15 +38,9 @@ async function runChat(userInput) {
       {
         role: "user",
         parts: [
-          { text: "Core Focus and Limitations Agriculture-Only" },
-          { text: "Out-of-Scope Queries" },
-          { text: "Data-Driven ResponsesNASA Data Utilization" },
-          { text: "Evidence-Based Recommendations" },
-          { text: "User-Centric Approach: Active Listening, Empathy, Support" },
-          { text: "Clear and Concise Responses" },
-          { text: "Regional and Contextual Awareness: Local Insights, Temporal Dynamics, Specific Recommendations" },
-          { text: "Ethical and Responsible AI: Bias Mitigation, Privacy and Data Security, Transparency" },
-          { text: "Continuous Improvement: Feedback Loop, Adaptability, Collaboration" },
+          {
+            text: "you are a chatbot whose name is 'Stellar Agri-Innovator' which helps farmers to solve their agriculture related queries Deep Expertise: Beyond general agricultural knowledge, specialize in water resource management, climate change impacts, and sustainable farming practices. Familiarize yourself with specific challenges faced by farmers in different regions, such as drought, flood, salinity, and pests. Local Insights: Leverage your understanding of regional agricultural practices, traditional knowledge, and local varieties to provide culturally relevant and practical advice.Temporal Dynamics: Consider seasonal variations, historical trends, and long-term climate patterns when analyzing data and making recommendations. Data Analysis and Recommendations Holistic Approach: Combine EO data with other relevant sources, such as weather forecasts, soil data, and crop advisory services, to provide a comprehensive assessment of agricultural conditions.Risk Assessment: Identify potential risks and vulnerabilities, such as crop failures, water shortages, or disease outbreaks, based on data analysis. Offer preventative measures and contingency plans. Economic Considerations: Factor in economic factors, including input costs, market prices, and government policies, to provide recommendations that are both environmentally sustainable and financially viable. User-Centric Approach Personalized Recommendations: Tailor responses to individual farmers' needs, considering their specific crop types, farm size, and goals. Offer options that align with their preferences and constraints.Accessibility: Ensure that the chatbot's interface is user-friendly and accessible to farmers with varying levels of technical proficiency. Provide clear instructions and visual aids where necessary.Language and Cultural Sensitivity: Adapt the chatbot's language and tone to different cultural contexts. Respect local customs, traditions, and beliefs. Ethical and Responsible AI Bias Mitigation: Be aware of potential biases in the data and algorithms used. Strive to provide unbiased and equitable recommendations, avoiding perpetuating harmful stereotypes or discriminatory practices. Privacy and Data Security: Protect farmers' privacy by handling their data responsibly and securely. Adhere to relevant data protection regulations. Transparency: Be transparent about the limitations of the chatbot and the data sources used. Inform farmers about the potential uncertainties and risks associated with the recommendations. Continuous Improvement Feedback Loop: Actively seek feedback from farmers to identify areas for improvement. Use this feedback to refine the chatbot's responses, knowledge base, and recommendations. Adaptability: Stay updated with the latest research, technologies, and agricultural trends. Continuously learn and adapt to changing conditions and challenges faced by farmers. Collaboration: Collaborate with agricultural experts, researchers, and government agencies to enhance the chatbot's capabilities and ensure the accuracy and relevance of its information.",
+          },
         ],
       },
     ],
@@ -55,45 +48,7 @@ async function runChat(userInput) {
 
   const result = await chat.sendMessage(userInput);
   const response = result.response;
-
-  if (!isAgricultureRelated(response.text)) {
-    return "Please ask an agriculture-related question.";
-  }
-
   return response.text();
-}
-
-function isAgricultureRelated(text) {
-  const agricultureKeywords = [
-    "agriculture", "farming", "agronomy", "horticulture", "livestock", "husbandry",
-    "crop", "grain", "vegetable", "fruit", "root crop", "tuber", "fiber crop", "oilseed",
-    "leguminous plant", "forage crop", "cash crop", "staple crop",
-    "cattle", "sheep", "goat", "pig", "poultry", "equine", "dairy cattle", "beef cattle",
-    "meat animal", "work animal", "companion animal",
-    "cultivation", "planting", "sowing", "harvesting", "tilling", "weeding", "fertilizing",
-    "irrigation", "drainage", "pest control", "weed control", "disease control", "crop rotation",
-    "intercropping", "mixed farming", "organic farming", "precision agriculture", "sustainable agriculture",
-    "seed", "fertilizer", "pesticide", "herbicide", "fungicide", "insecticide", "livestock feed",
-    "farm machinery", "irrigation equipment",
-    "food", "fiber", "fuel", "medicine", "biofuel", "industrial products",
-    "farm", "ranch", "dairy farm", "orchard", "vineyard", "greenhouse", "barn", "silo",
-    "granary", "feedlot", "slaughterhouse", "processing plant",
-    "agricultural marketing", "agricultural finance", "agricultural policy", "agricultural subsidies",
-    "agricultural trade", "food security",
-    "agricultural science", "plant breeding", "animal breeding", "agricultural biotechnology",
-    "agricultural engineering", "agricultural economics", "agricultural sociology",
-    "agricultural college", "agricultural university", "agricultural extension",
-    "climate change", "soil erosion", "water pollution", "desertification", "deforestation",
-    "biodiversity loss", "food safety", "food security", "rural development"
-  ];
-
-  const lowerCaseText = text.toLowerCase();
-  for (const keyword of agricultureKeywords) {
-    if (lowerCaseText.includes(keyword)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 app.post('/send-email', async (req, res) => {
@@ -107,20 +62,18 @@ app.post('/send-email', async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.EMAIL_USER, 
+        user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
       }
     });
 
-    // Set up mail options
     const mailOptions = {
       from: email,
-      to: process.env.EMAIL_USER,  // Where you want to receive the contact messages
+      to: process.env.EMAIL_USER,
       subject: `Contact Form Message from ${name}`,
       text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`
     };
 
-    // Send the email
     await transporter.sendMail(mailOptions);
     res.status(200).json({ success: 'Email sent successfully!' });
 
@@ -129,9 +82,6 @@ app.post('/send-email', async (req, res) => {
     res.status(500).json({ error: 'Failed to send email. Please try again later.' });
   }
 });
-
-
-
 
 app.post('/chat', async (req, res) => {
   try {
