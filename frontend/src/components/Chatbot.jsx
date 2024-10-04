@@ -14,7 +14,7 @@ function Chatbot({ onClose }) {
       setInput('');
 
       try {
-        setLoading(true); // Set loading to true while waiting for response
+        setLoading(true); 
         const response = await fetch(`${process.env.REACT_APP_API_URL}/chat`, {
           method: 'POST',
           headers: {
@@ -24,7 +24,7 @@ function Chatbot({ onClose }) {
         });
 
         const data = await response.json();
-        // Add chatbot response to the chat
+        
         setMessages((prevMessages) => [
           ...prevMessages,
           { text: data.response, user: false },
@@ -36,7 +36,7 @@ function Chatbot({ onClose }) {
           { text: 'Error getting response from server', user: false },
         ]);
       } finally {
-        setLoading(false); // Set loading to false after response
+        setLoading(false);
       }
     }
   };
